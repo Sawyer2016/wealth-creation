@@ -1,0 +1,13 @@
+[Service]
+ExecStart=/usr/bin/npm start
+WorkingDirectory=/project/2016-wc-platypus/Ghost-0.9.0
+Restart=always
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=node-blog
+User=swenadmin
+Group=swenadmin
+Environment=NODE_ENV=production
+
+[Install]
+WantedBy=multi-user.target

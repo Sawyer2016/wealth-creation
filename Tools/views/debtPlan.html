@@ -1,0 +1,441 @@
+<% include header.html %>
+<link rel="stylesheet" href="/tools/font_awesome/css/font-awesome.min.css">
+<link href="https://fonts.googleapis.com/css?family=Noto+Sans" rel="stylesheet">
+<script type="text/javascript" src='/tools/bubble_chart/bubble_chart.js'></script>
+
+<style>
+	html, body {
+		height: 100%;
+		width: 100%;
+	}
+	.debt-container {
+		display: flex;
+		width: 100%;
+	}
+	#debt-list {
+		flex: 1;
+	}
+	#debt-chart {
+		flex: 2;
+	}
+	#debt-add-modal-spinner {
+		display: none;
+	}
+
+	#debt-global-date-picker {
+		height: 43px;
+		padding-bottom: 5px;
+	}
+
+	/* entire container, keeps perspective */
+	.flip-container {
+		perspective: 1000px;
+	}
+
+	.flip-container, .front, .back {
+		width: 100%;
+	}
+
+	/* flip speed goes here */
+	.flipper {
+		transition: 0.6s;
+		transform-style: preserve-3d;
+
+		position: relative;
+	}
+
+	/* hide back of pane during swap */
+	.front, .back {
+		backface-visibility: hidden;
+
+		position: absolute;
+		top: 0;
+		left: 0;
+	}
+
+	/* front pane, placed above back */
+	.front {
+		z-index: 2;
+		/* for firefox 31 */
+		transform: rotateY(0deg);
+	}
+
+	/* back, initially hidden pane */
+	.back {
+		transform: rotateY(180deg);
+	}
+
+	.flip-container .flipper {
+		transform: rotateY(0deg);
+	}
+
+	.flip-container.flip .flipper {
+		transform: rotateY(180deg);
+	}
+
+	.datepicker {
+		z-index:9999 !important;
+	}
+
+	#top-bar-buttons {
+		display: flex;
+	}
+
+	#right-buttons {
+		margin-left: auto;
+	}
+</style>
+<div class="container">
+	<div id="top-bar">
+		<div id="top-bar-buttons">
+			<div id="left-buttons">
+				<button id="debt-add-btn" class="btn btn-primary">New Debt</button>
+				<button id="view-toggle-btn" class="btn btn-primary">View Debts</button>
+				<button id="help-btn" class="btn btn-primary">Help</button>
+			</div>
+			<div id="right-buttons">
+				<button id="today-btn" class="btn btn-default">Today</button>
+				<button id="yesterday-btn" class="btn btn-default">&lt;</button>
+				<input id="debt-global-date-picker" class="datepicker" type="text"></input>
+				<button id="tomorrow-btn" class="btn btn-default">&gt;</button>
+			</div>
+		</div>
+	</div>
+
+	<!-- https://davidwalsh.name/css-flip -->
+	<div id="content-flipper" class="flip-container" ontouchstart="this.classList.toggle('hover');">
+		<div class="flipper">
+			<div class="front">
+				<div class="debt-container">
+					<div id="debt-chart">
+						<div id="bubble-chart"></div>
+					</div>
+				</div>
+			</div>
+			<div class="back">
+				<div class="debt-container">
+					<div id="debt-list">
+						<!--<div id="debt-buttons">
+							<button id="debt-add-btn" class="btn btn-primary">Add Debt</button>
+						</div>-->
+						<table id="debt-table" class="table table-hover">
+							<thead>
+								<th>Priority</th>
+								<th>Name</th>
+								<th>Description</th>
+								<th>Total Balance</th>
+								<th>Recurring Payment</th>
+								<th>Total Paid</th>
+								<th>Expected Payoff Date</th>
+								<th>Make a Payment</th>
+							</thead>
+							<tbody>
+							</tbody>
+						</table>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div id="help-modal" class="modal fade">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal">&times;</button>
+					<h4 class="modal-title">Help</h4>
+				</div>
+				<div class="modal-body">
+					<p>Follow these tips to get the most out of the debt plan</p>
+					<ul>
+						<li>Bigger bubbles are higher priority debts. These are your CHEAPEST debts.</li>
+						<li>More brightly coloured bubbles are more expensive debts.</li>
+						<li>You can only make a payment when looking at today.</li>
+					</ul>
+					<br />
+					<p>This may seem counter intuitive at first, wouldn't you want to pay your largest debt first?</p>
+					<p>Economically, no. By following this plan you can pay your debts off sooner and thus compound payments to focus on one debt at a time.</p>
+					<p>The momentum is addictive!</p>
+				</div>
+			</div>
+		</div>
+	</div>
+
+
+	<div id="debt-payment-modal" class="modal fade">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal">&times;</button>
+					<h4 class="modal-title">Pay a debt</h4>
+				</div>
+				<div class="modal-body">
+					<div id="debt-payment-modal-alerts"></div>
+
+					<div class="input-group">
+						<span class="input-group-addon" id="basic-addon2">$</span>
+						<input id="payment-amount-input" type="text" class="form-control" placeholder="Payment amount" aria-describedby="basic-addon2">
+					</div>
+					<div class="input-group">
+						<input id="payment-date-input" type="text" class="form-control datepicker" placeholder="Payment date">
+					</div>
+					<input id="payment-debt-name-input" type="hidden" class="form-control">
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+					<button type="button" class="btn btn-primary" id="save-payment-btn">Add payment</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div id="debt-add-modal" class="modal fade">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal">&times;</button>
+					<h4 class="modal-title">Add a debt</h4>
+				</div>
+				<div class="modal-body">
+					<div id="debt-add-modal-content">
+						<div id="debt-add-modal-alerts"></div>
+
+						<div class="input-group">
+							<input id="debt-add-name-input" type="text" class="form-control" placeholder="Debt name">
+						</div>
+						<div class="input-group">
+							<input id="debt-add-description-input" type="text" class="form-control" placeholder="Debt description">
+						</div>
+						<select id="debt-add-pay-off-period-input" placeholder="Payment Periodicity" class="form-control">
+							<option value="monthly">Monthly</option>
+							<option value="weekly">Weekly</option>
+						</select>
+						<div class="input-group">
+							<input id="debt-add-date-input" type="text" class="form-control datepicker" placeholder="Debt add date">
+						</div>
+						<div class="input-group">
+							<span class="input-group-addon" id="basic-addon2">$</span>
+							<input id="debt-add-recurring-payment-input" type="text" class="form-control" placeholder="Recurring payment" aria-describedby="basic-addon2">
+						</div>
+						<div class="input-group">
+							<span class="input-group-addon" id="basic-addon2">$</span>
+							<input id="debt-add-total-balance-input" type="text" class="form-control" placeholder="Total balance" aria-describedby="basic-addon2">
+						</div>
+					</div>
+				</div>
+				<div class="modal-footer">
+						<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+						<button type="button" class="btn btn-primary" id="save-debt-source-btn">
+							<i id="debt-add-modal-spinner" class="fa fa-refresh fa-spin fa-3x fa-fw"></i>
+							<div id="debt-add-modal-reg-text">Add debt</div>
+						</button>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<script>
+	var height = $(window).height() - $(".navbar").outerHeight(true) - $('#top-bar').outerHeight(true) - 12;
+	var chart = new BubbleChart('bubble-chart', $("#debt-chart").width(), height, '#2780e3');
+	chart.init()
+
+	refreshData();
+
+	setupDatePicker("#debt-global-date-picker");
+	setupDatePicker("#debt-add-date-input");
+	setupDatePicker("#payment-date-input");
+
+	$("#debt-global-date-picker").on("change", function() {
+		changeDate($(this).val());
+	});
+
+	function setupDatePicker(picker) {
+		$(picker).datepicker();
+		$(picker).datepicker("option", "dateFormat", 'yy-mm-dd');
+		$(picker).val(moment(Date.now()).format('YYYY-MM-DD'));
+	}
+
+	function refreshData() {
+		$.ajax({
+			url: "/tools/debtPlan/asJson",
+			success: function(data) {
+				chart.setData(data.debts);
+
+				changeDate($("#debt-global-date-picker").val());
+			}
+		});
+	}
+
+	function todaySelectedInDatePicker() {
+		return String(moment(Date.now()).format('YYYY-MM-DD')) === $("#debt-global-date-picker").val();
+	}
+
+	function changeDate(newDate) {
+		var data = chart.setDate(newDate);
+		clearTable('#debt-table');
+		addDebtsToTable(data, "#debt-table");
+		console.log(data);
+	}
+
+	$(document).on("click", "#today-btn", function() {
+		$("#debt-global-date-picker").val(moment(Date.now()).format('YYYY-MM-DD'));
+		// This won't throw the change event for some reason so the ui won't update. Force throw it here
+		$("#debt-global-date-picker").change();
+	});
+
+	$(document).on("click", "#yesterday-btn", function() {
+		var selected = moment($("#debt-global-date-picker").val());
+		$("#debt-global-date-picker").val(selected.add(-1, 'days').format('YYYY-MM-DD'));
+		// This won't throw the change event for some reason so the ui won't update. Force throw it here
+		$("#debt-global-date-picker").change();
+	});
+
+	$(document).on("click", "#tomorrow-btn", function() {
+		var selected = moment($("#debt-global-date-picker").val());
+		$("#debt-global-date-picker").val(selected.add(1, 'days').format('YYYY-MM-DD'));
+		// This won't throw the change event for some reason so the ui won't update. Force throw it here
+		$("#debt-global-date-picker").change();
+	});
+
+	$(document).on("click", "#help-btn", function () {
+		$('#help-modal').modal('show');
+	});
+
+	$(document).on("click", ".debt-make-payment-btn", function () {
+		var paymentAmount = $(this).data('amount');
+		var paymentDate = moment(Date.now()).format('YYYY-MM-DD');
+		var debtName = $(this).data('name');
+
+		$("#payment-amount-input").val( paymentAmount );
+		$("#payment-date-input").val( paymentDate );
+		$("#payment-debt-name-input").val( debtName );
+
+		$('#debt-payment-modal').modal('show');
+	});
+
+	$(document).on("click", "#debt-add-btn", function () {
+		var paymentDate = moment(Date.now()).format('YYYY-MM-DD');
+
+		$("#debt-add-date-input").val( paymentDate );
+		$('#debt-add-modal').modal('show');
+	});
+
+	$(document).on("click", "#save-debt-source-btn", function () {
+		addDebtToDatabase(
+			$("#debt-add-date-input").val(),
+			$("#debt-add-total-balance-input").val(),
+			$("#debt-add-recurring-payment-input").val(),
+			$("#debt-add-pay-off-period-input").val(),
+			$("#debt-add-name-input").val(),
+			$("#debt-add-description-input").val()
+		);
+	});
+
+	$(document).on("click", "#save-payment-btn", function () {
+		addPaymentToDatabase(
+			$("#payment-amount-input").val(),
+			$("#payment-date-input").val(),
+			$("#payment-debt-name-input").val()
+		);
+	});
+
+	$(document).on("click", "#view-toggle-btn", function() {
+		document.querySelector("#content-flipper").classList.toggle("flip");
+	});
+
+	function addDebtToDatabase(addDate, totalBalance, recurringPayment, payOffPeriod, name, description) {
+		$.ajax({
+			type: 'POST',
+			url: '/tools/debtPlan/addDebt',
+			data: {
+				addDate: addDate,
+				totalBalance: totalBalance,
+				recurringPayment: recurringPayment,
+				payOffPeriod: payOffPeriod,
+				name: name,
+				description: description
+			},
+			dataType: 'json',
+			success: function(res) {
+				$('#debt-add-modal').modal('hide');
+				refreshData();
+			},
+			error: function(err, res) {
+				showErrorAlert('#debt-add-modal-alerts', err.responseJSON.error);
+			}
+		});
+	}
+
+	function addPaymentToDatabase(amount, paymentDate, debtName) {
+		$.ajax({
+			type: 'POST',
+			url: '/tools/debtPlan/addPayment',
+			data: {
+				debtName: debtName,
+				paymentDate: paymentDate,
+				amount: amount
+			},
+			dataType: 'json',
+			success: function(res) {
+				$('#debt-payment-modal').modal('hide');
+				refreshData();
+			},
+			error: function(err, res) {
+				showErrorAlert('#debt-payment-modal-alerts', err.responseJSON.error);
+			}
+		});
+	}
+
+	function clearTable(table) {
+		$(table + ' tbody > tr').remove();
+	}
+
+	function addDebtsToTable(debts, table) {
+		for (var i = 0; i < debts.length; i++) {
+			addDebtToTable(debts[i], table);
+		}
+	}
+
+	function addDebtToTable(debt, table) {
+		$(table + ' > tbody:last-child').append(
+			tr(
+				td(debt.priority),
+				td(debt.name),
+				td(debt.description),
+				td('$' + String(debt.totalBalance)),
+				td('$' + String(debt.recurringPayment)),
+				td('$' + String(debt.totalPaid)),
+				td(debt.payOffDate),
+				td(todaySelectedInDatePicker() ? button('Pay', debt.recurringPayment, debt.addDate, debt.name) : '')
+			)
+		);
+	}
+
+	function concatArguments(arguments) {
+		var res = '';
+		for (var i = 0; i < arguments.length; i++) {
+			res = res + arguments[i];
+		}
+		return res;
+	}
+
+	function tr(content) {
+		return '<tr>' + concatArguments(arguments) + '</tr>';
+	}
+
+	function td(content) {
+		return '<td>' + content + '</td>';
+	}
+
+	function button(content, amount, date, name) {
+		return '<button data-toggle="modal" data-amount="' + String(amount) + '" data-date="' + String(date) + '" data-name="' + String(name) + '" class="debt-make-payment-btn btn btn-default">' + content + '</button';
+	}
+
+	function showErrorAlert(divName, text) {
+		var alertDiv = '<div class="alert alert-danger"><a href="#" class="close" data-dismiss="alert">&times;</a><strong>Error</strong> ' + text + '</div>';
+		$(divName).append(alertDiv);
+	}
+	</script>
+
+<% include footer.html %>

@@ -1,0 +1,113 @@
+<% include adminHeader.html %>
+<script language="javascript">
+	function ifCreated(){
+
+	var eventName=$("#eventName").val();
+
+	$.ajax({
+		type:'post',
+	     data:{'eventName':eventName},
+		 url:'/tools/adminEvent/queryEventByName',
+		 success:function(data){
+		 if(data=="exist"){
+		
+		 $("#alertContent").css({ color: "#FF0000"});
+		 $("#alertContent").html('This name already exists!');
+		 $("#submit").attr("disabled",true);
+		 }
+		 else{
+
+		  $("#alertContent").empty();
+		  $("#submit").removeAttr("disabled");
+		 }
+		 }
+		})
+	}
+	function addAlert(){
+	alert('create successfully');
+	return true;
+	}
+	$('#em').addClass('active');
+	</script>
+<form action="/tools/adminEvent/createEvent" method="post" onsubmit="return addAlert()">
+		<div class="container">
+			<br>
+			<h2 align="center">
+			Create New Event
+			</h2>
+			<br>
+			<br>
+			<div class="row">
+				<div class="col-md-3">
+				</div>
+				<div class="col-md-3">
+				Name:
+				</div>
+				<div class="col-md-3">
+				<input type="text" id="eventName"name="name" class="form-control"oninput="setCustomValidity('')" oninvalid="setCustomValidity('enter valid name')" required="required"  onblur="ifCreated()" >
+				<span id="alertContent"></span>
+				</div>
+				<div class="col-md-3">
+				</div>
+			</div>
+			<br>
+			<div class="row">
+				<div class="col-md-3">
+				</div>
+				<div class="col-md-3">
+				Description:
+				</div>
+				<div class="col-md-3">
+				<textarea name="description" class="form-control" rows='8' required="required" oninput="setCustomValidity('')"oninvalid="setCustomValidity('enter valid Description')" ></textarea>
+				</div>
+				<div class="col-md-3">
+				</div>
+			</div>
+			<br>
+			<div class="row">
+				<div class="col-md-3">
+				</div>
+				<div class="col-md-3">
+				Time:
+				</div>
+				<div class="col-md-3">
+				<input type="datetime-local" name="time" class="form-control" required="required" oninput="setCustomValidity('')"oninvalid="setCustomValidity('enter a valid time')" >
+				</div>
+				<div class="col-md-3">
+				</div>
+			</div>
+			<br>
+			<div class="row">
+				<div class="col-md-3">
+				</div>
+				<div class="col-md-3">
+				Location:
+				</div>
+				<div class="col-md-3">
+				<input type="text" name="location" class="form-control" required="required" oninput="setCustomValidity('')"oninvalid="setCustomValidity('enter a valid location')" >
+				</div>
+				<div class="col-md-3">
+				</div>
+			</div>
+			<br>
+			<br>
+			<div class="row">
+				<div class="col-xs-12 col-md-3">
+				</div>
+				<div class="col-xs-12 col-md-3" align="center">
+					<button type="button"  class="btn btn-default" onclick="javascript:history.back(-1);">
+						Back
+					</button>
+				</div>
+				<div class="col-xs-12 col-md-3" align="center">
+					<button type="submit" id="submit"class="btn btn-danger" >
+						Submit
+					</button>
+				</div>
+			</div>
+			
+		</div>
+	
+</div>
+</form>
+<% include footer.html %>

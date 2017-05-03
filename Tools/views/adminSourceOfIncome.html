@@ -1,0 +1,68 @@
+<% include adminHeader.html %>
+<script language="javascript">
+	function previous(){
+	if(<%=pageNumber%> > 1){
+	var number=<%=pageNumber%>-1;
+	window.location.href="/tools/adminIncome?page="+number;
+	}
+	}
+	function next(){
+	if(<%=pageNumber%> <$(".pagination").children("li").length-2){
+	var number=<%=pageNumber%>+1;
+	window.location.href="/tools/adminIncome?page="+number;
+	}
+	}
+	
+	
+	$(document).ready(function(){
+	var number=<%=pageNumber%>;
+	$("li[name=<%=pageNumber%>]").attr("class","active");
+	if(number==1){
+	$("li[name=previousPage]").attr("class","disabled");
+	}
+	if(number==$(".pagination").children("li").length-2){
+	$("li[name=nextPage]").attr("class","disabled");
+	}
+	});
+	$('#il').addClass('active');
+</script>
+	<div class="container">
+		<div class="row">
+			<% SourceList.forEach(function(source){%>
+				    <div class="col-xs-12 col-md-6">
+				    	<br>
+						<h2>
+							<%=source.name%>
+						</h2>
+						<p>
+							Salary(AUD/hour):<%=source.introduction%>
+						</p>
+						<button class="button" onclick="javascript:window.location.href='/tools/adminIncome/incomeSourceDetail?sourceName=<%=source.name%>'">
+							Detail
+						</button>
+						<button class="button" onclick="alert('delete successfully!');javascript:window.location.href='/tools/adminIncome/deleteSource?sourceName=<%=source.name%>'">
+							Delete
+						</button>
+					</div>
+			<%})%>
+		</div>
+		<br>
+		<div class="row" align="center">			
+			<a href="/tools/adminIncome/SourceOfIncome" class="btn btn-danger">Create</a>
+			<br>
+		</div>
+		<div class="row" align="center">
+			<%if(totalPageNumber){%>
+			<ul class="pagination"> 
+				<li name="previousPage"><a href="#" onclick="previous()">&laquo;</a></li> 
+				<% for(var i=0;i<totalPageNumber;i++) {%>
+				
+				<li  name="<%=i+1%>"><a  href="/tools/adminIncome?page=<%=i+1%>" ><%=i+1%></a></li> 
+				
+				 <%}%>
+				<li name="nextPage"><a href="#" onclick="next()">&raquo;</a></li> 
+			</ul>
+			<%}%>
+		</div>
+	</div>
+<% include footer.html %>

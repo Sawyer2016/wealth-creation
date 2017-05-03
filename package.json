@@ -1,0 +1,15 @@
+{
+  "name" : "2016-wc-platypus",
+  "version" : "1.0.0",
+  "scripts": {
+    "blog": "cd Ghost-0.9.0 && npm start --production",
+    "forum": "cd NodeBB-master && ./nodebb start",
+    "o-auth": "cd OAuthServer && cd authorization-server && npm start",
+    "tools": "cd Tools && npm start",
+    "start": "concurrently \"npm run blog\" \"npm run forum\" \"npm run o-auth\" \"npm run tools\" "
+  },
+  "dependencies": {
+    "mocha" : "3.0.2",
+    "chai": "3.5.0"
+  }
+}
