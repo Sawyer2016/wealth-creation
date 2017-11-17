@@ -1,0 +1,96 @@
+<% include adminHeader.html %>
+<script language="javascript">
+function ifCreated(){
+
+var source=$("#source").val();
+
+	$.ajax({
+		type:'post',
+	     data:{'source':source},
+		 url:'/tools/adminIncome/querySourceByName',
+		 success:function(data){
+		 if(data=="exist"){
+		 $("#alertContent").css({ color: "#FF0000"});
+		 $("#alertContent").html('This name already exists!');
+		 $("#submit").attr("disabled",true);
+		 }
+		 else{
+		  $("#alertContent").empty();
+		  $("#submit").removeAttr("disabled");
+		 }
+		 }
+		})
+	}
+	function addAlert(){
+	alert('create successfully');
+	return true;
+	}
+	$('#il').addClass('active');
+	</script>
+<form action="/tools/adminIncome/createSource" method="post" onsubmit="return addAlert()">
+<div class="container">
+	<div class="row">
+		<div class="col-md-12" style="font-size:20px;font-weight: bold">
+			<br>
+			<div class="row">
+				<div class="col-md-3">
+				</div>
+				<h3 class="col-md-3">
+				Name:
+				</h3>
+				<div class="col-md-3">
+				<input type="text" id="source" name="name" class="form-control"oninput="setCustomValidity('')" oninvalid="setCustomValidity('enter valid name')" required="required"  onblur="ifCreated()">  
+				<span id="alertContent"></span>
+				</div>
+				<div class="col-md-3">
+				</div>
+			</div>
+			<br>
+			<div class="row">
+				<div class="col-md-3">
+				</div>
+				<h3 class="col-md-3">
+				Salary(AUD/hour):
+				</h3>
+				<div class="col-md-3">
+				<input name="introduction" class="form-control" required="required" oninput="setCustomValidity('')"oninvalid="setCustomValidity('enter valid Description')" onkeyup="this.value=this.value.replace(/\D/g,'')"  onafterpaste="this.value=this.value.replace(/\D/g,'')">			
+				</div>
+				<div class="col-md-3">
+				</div>
+			</div>
+			<br>
+			<div class="row">
+				<div class="col-md-3">
+				</div>
+				<h3 class="col-md-3">
+				Description:
+				</h3>
+				<div class="col-md-3">
+				<textarea name="description" class="form-control"rows='8'required="required" oninput="setCustomValidity('')"oninvalid="setCustomValidity('enter valid Description')"></textarea>
+				</div>
+				<div class="col-md-3">
+				</div>
+			</div>
+			<br>
+			
+			
+			<br>
+			<div class="row">
+				<div class="col-xs-12 col-md-3">
+				</div>
+				<div class="col-xs-12 col-md-3" align="center">
+					<button type="button"  class="btn btn-default" onclick="javascript:history.back(-1);">
+						Back
+					</button>
+				</div>
+				<div class="col-xs-12 col-md-3" align="center">
+					<button type="submit" id="submit"class="btn btn-danger" >
+						Create
+					</button>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+</form>
+<% include footer.html %>

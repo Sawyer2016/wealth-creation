@@ -1,0 +1,94 @@
+<% include header.html %>
+<script type="text/javascript" src="/tools/javascripts/jquery-1.11.1.min.js"></script>
+<link rel='stylesheet' href='/tools/stylesheets/expenseStyle/style.css' />
+ 
+<div class="container">
+  <div id="divMain">
+    <h1 align="center">Bill Information</h1>
+   	<div class="row">
+   		<div class="col-md-3"></div>
+	    <div id="divMain2" class="edit tag_edit col-md-6">
+
+		<form id="edit" name="edit" method="post" action="#">
+			<input id="id" name="id" type="hidden" value="<%= _id%>">
+			<dl style="text-align: center;">
+			<dt><span class="title">Category</span></dt>
+			<dd>
+			<select name="cid" id="cid">
+			<% for(var i=0; i<c_list.length; i++) {%>
+			<tr class="color3">
+			<option value="<%= c_list[i]._id %>" <% if (c_list[i]._id==cid) { %> selected="selected"<% } %>><%= c_list[i].category_name %></option>
+			<% } %>
+			</select>
+			</dd>
+			</dl> 
+
+			<dl style="text-align: center;">
+			<dt><span class="title">Product</span></dt>
+			<dd><input name="productname" type="text" id="productname" class="edit" placeholder="Bill Name"  value="<%= productname%>"/></dd>
+			</dl> 
+
+			<dl style="text-align: center;">
+			<dt><span class="title">Price</span></dt>
+			<dd><input name="expense" type="text" id="expense" class="edit" placeholder="Price" onkeyup="this.value=this.value.replace(/\D/g,'')"  onafterpaste="this.value=this.value.replace(/\D/g,'')" value="<%= expense%>"/></dd>
+			</dl> 
+			<dl style="text-align: center;">
+			<dt><span class="title">Date</span></dt>
+			<dd><input name="add_time" type="date" id="add_time" class="edit"  placeholder="Date"  value="<%= add_time%>"/></dd>
+			</dl> 
+
+			<dl style="text-align: center;">
+				<input class="btn btn-warning" style="width:100px" value="Return" onclick="javascript:history.back(-1);"/>
+				<input class="btn btn-primary" style="width:100px" type="submit" value="Submit" id="btnPost" >
+			</dl>
+
+		</form>
+
+	    </div>
+    </div>
+</div>
+</div>
+    <script>
+	//$("body").html("JQuery");
+	
+	$("#edit").on("submit",function()
+	{
+		var data={};
+		data.cid=$("#cid").val();
+		data.productname=$('#productname').val();
+		data.expense=$("#expense").val();
+		data.add_time=$("#add_time").val();
+		data.id=$("#id").val();
+
+		if(data.expense=="")
+		{
+			alert('My expense cannot be empty');
+			return false;
+		}
+		if(data.add_time=="")
+		{
+			alert('Date cannot be empty');
+			return false;
+		}
+
+				$.ajax({
+					type:"POST",
+					url:"api?act=u_add",
+					data:data,
+					success:function(res){
+						
+						  if(res.code)
+						  {
+							  window.location.href="/tools/expenseSnake";
+						  }
+						  alert(res.msg);
+						}
+					});
+			return false;
+	});
+
+	 
+	
+
+	</script>
+<% include footer.html %>

@@ -1,0 +1,20 @@
+{
+    "category": "Kategoria",
+    "subcategories": "Podkategorie",
+    "new_topic_button": "Nowy Temat",
+    "guest-login-post": "Zaloguj się, aby napisać.",
+    "no_topics": "<strong>W tej kategorii nie ma jeszcze żadnych tematów.</strong><br />Dlaczego nie spróbujesz jakiegoś utworzyć?",
+    "browsing": "przegląda",
+    "no_replies": "Nikt jeszcze nie odpowiedział",
+    "no_new_posts": "Brak nowych postów.",
+    "share_this_category": "Udostępnij tę kategorię",
+    "watch": "Obserwuj",
+    "ignore": "Ignoruj",
+    "watching": "Watching",
+    "ignoring": "Ignoring",
+    "watching.description": "Show topics in unread",
+    "ignoring.description": "Do not show topics in unread",
+    "watch.message": "Obserwujesz teraz uaktualnienia z tej kategorii",
+    "ignore.message": "Ignorujesz teraz uaktualnienia z tej kategorii",
+    "watched-categories": "Obserwowane kategorie"
+}

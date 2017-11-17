@@ -1,0 +1,39 @@
+<% include header.html %>
+<script>
+	$('#il').addClass('active');
+</script>
+<div class="container">
+		<br>
+		<div class="row">
+			<div class="col-md-12">
+				<h2 align="center">
+					Used Sources
+				</h2>
+			<br>
+			<% usedSourceList.forEach(function(source){ %>
+				<div class="row">
+				    <div class="col-md-4">
+					</div>
+					<div class="col-md-3">
+						<h4>
+							<%=source.name%>
+						</h4>
+						<p>
+							<%=source.introduction%>
+						</p>
+					</div>
+					<div class="col-md-2">
+					<button class="button" onclick="javascript:window.location.href='/tools/userIncome/incomeSourceDetail?sourceName=<%=source.name%>'">
+						Detail
+					</button>
+					</div>
+				</div>
+				<br>
+			<%})%>
+				<div class="row" align="center">
+					<a href="javascript:history.back(-1);" class="btn btn-default">Back</a>
+				</div>
+			</div>
+		</div>
+	</div>
+<% include footer.html %>

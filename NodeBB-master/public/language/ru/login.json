@@ -1,0 +1,12 @@
+{
+    "username-email": "Имя пользователя / E-mail",
+    "username": "Имя пользователя",
+    "email": "Email",
+    "remember_me": "Запомнить меня",
+    "forgot_password": "Забыли пароль?",
+    "alternative_logins": "Войти через",
+    "failed_login_attempt": "Некорректный логин",
+    "login_successful": "Вы успешно вошли!",
+    "dont_have_account": "Нет акканута?",
+    "logged-out-due-to-inactivity": "You have been logged out of the Admin Control Panel due to inactivity"
+}

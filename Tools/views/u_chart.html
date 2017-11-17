@@ -1,0 +1,122 @@
+<% include header.html %>
+<link rel='stylesheet' href='/tools/stylesheets/expenseStyle/style.css' />
+ 
+<div class="container">
+  <div id="divMain">
+    <h1 align="center">My Expense Snake</h1>
+    <div id="divMain2" class="edit tag_edit">
+    <div id="my" style="height: 350px"></div>
+    </div>
+  </div>
+  <div class="row">
+  <h3>Recommendations Category:
+    <select id="select_category" style="width:120px">
+        <tr class="color3">
+            <option value="all">All</option>
+    <% for(var i=0; i<c_list.length; i++) {%>
+      <tr class="color3">
+        <option value="<%= c_list[i].category_name.replace(/\s+/g, '') %>"> <%= c_list[i].category_name %></option>
+      <% } %>
+
+    </select>
+    </h3>
+  </div>
+  <div class="row">
+        <% for(var i=0; i<recommendation.length; i++){ %>
+            <div class="recommd col-xs-12 col-md-6 <%= recommendation[i].category_name.replace(/\s+/g, '') %>">
+                <h3>
+                    <%= recommendation[i].category_name %> 
+                </h3>
+                <p>
+                    Product:<%= recommendation[i].recommend_product %>
+                </p>
+                <p>
+                    Price:<%= recommendation[i].recommend_price %>
+                </p>
+                <p>
+                    Details:<%= recommendation[i].description %>
+                </p>
+                <a href="<%= recommendation[i].product_url %>">
+                    <%= recommendation[i].product_url %>
+                </a>
+            </div>
+        <%}%>
+    </div>
+    <p>
+        <input name="btnReturn" value="Return" class="btn btn-warning" onclick="javascript:history.back(-1);" />
+    </p>
+	<p id='rec'>
+	</p>
+</div>
+<script>
+
+	var dom = document.getElementById("my");
+    var myChart = echarts.init(dom);
+
+	option = null;
+    option = {
+     
+        tooltip: {
+            trigger: 'axis'
+        },
+        xAxis:  {
+            type: 'category',
+            boundaryGap: false,
+            data: [<%- n%>]
+        },
+        yAxis: {
+            type: 'value',
+            axisLabel: {
+                formatter: '{value}$'
+            }
+        },
+        series: [
+            
+            {
+                name:'My Expense',
+                type:'line',
+                data:[<%= t%>],
+     			 markPoint: {
+                    data: [
+                        {type: 'max', name: 'Max'},
+                        {type: 'min', name: 'Min'}
+                    ]
+                },
+                
+    			
+            }
+        ]
+};
+
+if (option && typeof option === "object") {
+    myChart.setOption(option, true);
+}
+myChart.on('click', function (params) {
+console.log(params);
+$("#rec").html(params.name);
+
+if(params.componentType === 'series') {
+
+        if (params.seriesType === 'line') {
+            if (params.dataType === 'edge') {
+                
+            }
+            else {//node
+                
+            }
+        }
+		}
+});
+
+$('#select_category').change(function() {
+    if($('#select_category').val() !== 'all'){
+        $('.recommd').hide();
+    }
+    if($('#select_category').val() === 'all'){
+        $('.recommd').show();
+    }
+    $('.' + $('#select_category').val()).show();
+});
+
+</script>
+<% include footer.html %>

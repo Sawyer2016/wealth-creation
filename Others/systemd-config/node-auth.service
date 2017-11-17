@@ -1,0 +1,13 @@
+[Service]
+ExecStart=/usr/bin/npm start
+WorkingDirectory=/project/2016-wc-platypus/OAuthServer/authorization-server
+Restart=always
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=node-auth
+User=root
+Group=swenadmin
+Environment=NODE_ENV=production
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,54 @@
+<% include header.html %>
+<script>
+	$('#il').addClass('active');
+</script>
+<div class="container">
+	<div class="row">
+		<div class="col-md-12">
+			<br>
+			<div class="row">
+				<div class="col-md-3">
+				</div>
+				<h4 class="col-md-3">
+				Source of Income:
+				</h4>
+				<p class="col-md-3">
+				<%=Name%>
+				</p>
+				<div class="col-md-3">
+				</div>
+			</div>
+			<br>
+			<div class="row">
+				<div class="col-md-3">
+				</div>
+				<h4 class="col-md-3">
+				Salary(AUD/hour):
+				</h4>
+				<p class="col-md-3">
+				<%=Introduction%>
+				</p>
+				<div class="col-md-3">
+				</div>
+			</div>
+			<br>
+			<div class="row">
+				<div class="col-md-3">
+				</div>
+				<h4 class="col-md-3">
+				Description:
+				</h4>
+				<p class="col-md-3">
+				<%=Description%>
+				</p>
+				<div class="col-md-3">
+				</div>
+			</div>
+			<br>
+			<div class="row" align="center">
+				<a href="javascript:history.back(-1);" class="btn btn-default">Back</a>
+			</div>
+		</div>
+	</div>
+</div>
+<% include footer.html %>

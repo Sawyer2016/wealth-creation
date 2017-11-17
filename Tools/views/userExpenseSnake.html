@@ -1,0 +1,71 @@
+<% include header.html %>
+<script>
+  $('#es').addClass('active');
+</script>
+<script type="text/javascript" src="/tools/javascripts/jquery-1.11.1.min.js"></script>
+
+
+
+<link rel='stylesheet' href='/tools/stylesheets/expenseStyle/style.css' />
+<div class="container">
+  <div id="divMain">
+    <h1 align="center">Expense Snake</h1>
+   <div class="SubMenu row" style="display: block;"><a href="expenseSnake/u_add"><span class="btn btn-danger" style="color:white">Add Bill </span></a><a href="expenseSnake/u_chart"><span class="btn btn-info" style="color:white">My Expense Snake </span></a></div>
+    <div id="divMain2">
+      <table border="1" cellpadding="10">
+        <tbody>
+          <tr class="color1">
+            <th>Product</th>
+            <th>Category</th>
+            <th>Expense</th> 
+            <th>Date</th>
+            <th>operation</th>
+          </tr>
+          <% 
+          var total = 0;
+          %>
+          <% for(var i=0; i<list.length; i++) { %>
+          <% 
+           total+=list[i].expense-0;
+          %>
+          <tr class="color3">
+            <td class="td10"><%= list[i].productname %> </td>
+            <td class="td10"><%= list[i].category_name %> </td>
+            <td class="td5"><%= list[i].expense %>$ </td>
+            <td class="td5"><%= list[i].add_time %> </td>
+          <td class="td10 tdCenter"><a href="expenseSnake/u_add?id=<%= list[i]._id %>" class="btn btn-primary" style="color:white">Edit</a> <a href="javascript:;" onClick="del('<%= list[i]._id %>')" class="btn btn-danger del" style="color:white">Delete</a></td>
+         </tr>
+          <% } %>
+       <tr>
+       <td class="td5">Total expense:</td>
+       <td   colspan="7" align="right"><%= total %>$ </td>
+       </tr>
+        </tbody>
+      </table>
+   
+      <hr>
+    </div>
+</div>
+</div>
+<script>
+
+ function del(id)
+ {
+	 	$.ajax({
+		type:"POST",
+		url:"expenseSnake/api?act=u_del&id="+id,
+		success:function(res){
+			  if(res.code)
+			  {
+				  alert('Delete the success');
+				  window.location.reload();
+			  }
+			  else
+			  {
+				  alert(res.msg);
+			  }
+			}
+		});
+ }
+</script>
+<% include footer.html %>
